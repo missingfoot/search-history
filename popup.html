@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    :root {
+      --bg-primary: white;
+      --bg-secondary: white;
+      --text-primary: #333;
+      --text-secondary: #666;
+      --text-muted: #999;
+      --border-color: #ddd;
+      --border-light: #eee;
+      --accent-primary: #5352ed;
+      --accent-danger: #ff4757;
+      --accent-success: #26d068;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: #1a1a1a;
+        --bg-secondary: #1a1a1a;
+        --text-primary: #e4e4e4;
+        --text-secondary: #b4b4b4;
+        --text-muted: #888;
+        --border-color: #404040;
+        --border-light: #333;
+        --accent-primary: #397f8b;
+        --accent-danger: #e74c3c;
+        --accent-success: #00b894;
+      }
+    }
+
+    body {
+      width: 500px;
+      height: 600px;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    
+    
+    .filter-container {
+      background: var(--bg-secondary);
+      padding: 12px;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    
+    .filter-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 14px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    
+    .operator-select {
+      padding: 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      min-width: 60px;
+    }
+    
+    .time-range-select {
+      padding: 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      min-width: 90px;
+      font-size: 14px;
+    }
+    
+    .remove-filter {
+      background: var(--accent-danger);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .add-filter-btn {
+      background: var(--accent-primary);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .clear-filters-btn {
+      background: var(--border-light);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .results-container {
+      background: var(--bg-secondary);
+      padding: 8px 12px;
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      min-height: 0;
+    }
+    
+    .result-item {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 13px;
+    }
+    
+    .result-item:last-child {
+      border-bottom: none;
+    }
+    
+    .result-url {
+      color: var(--text-muted);
+      text-decoration: none;
+      display: block;
+      word-break: break-all;
+      overflow-wrap: break-word;
+    }
+    
+    .result-title {
+      color: var(--text-secondary);
+      margin-top: 2px;
+      font-size: 12px;
+    }
+    
+    .result-time {
+      color: var(--text-muted);
+      font-size: 11px;
+      margin-top: 2px;
+    }
+    
+    .loading {
+      text-align: center;
+      color: var(--text-secondary);
+      padding: 20px;
+    }
+    
+    .no-results {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 20px;
+    }
+    
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+    }
+    
+    .results-count {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+    
+    .open-all-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .open-all-link:hover {
+      color: var(--text-primary);
+    }
+
+    /* Custom scrollbar */
+    .results-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .results-container::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    .results-container::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+
+    .results-container::-webkit-scrollbar-thumb:hover {
+      background: var(--text-secondary);
+    }
+
+    /* Highlight matching text */
+    .highlight {
+      background: transparent;
+      color: var(--text-primary);
+      text-decoration: underline;
+      text-decoration-color: var(--text-primary);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+    }
+
+    /* Date group headings */
+    .date-group-header {
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 16px 0 4px 0;
+    }
+
+    .date-group-header:first-child {
+      margin-top: 0;
+    }
+
+    /* Custom checkbox styling */
+    input[type="checkbox"] {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border-color);
+      border-radius: 3px;
+      background: var(--bg-secondary);
+      cursor: pointer;
+      position: relative;
+    }
+
+    input[type="checkbox"]:checked {
+      background: var(--accent-primary);
+      border-color: var(--accent-primary);
+    }
+
+    input[type="checkbox"]:checked::after {
+      content: "✓";
+      position: absolute;
+      top: -2px;
+      left: 1px;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    input[type="checkbox"]:hover {
+      border-color: var(--accent-primary);
+    }
+
+    /* Title styling */
+    .result-title {
+      color: var(--text-secondary);
+      font-size: 12px;
+      margin-top: 2px;
+      line-height: 1.3;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="filter-container">
+    <div id="filters-list">
+      <div class="filter-row">
+        <input type="text" class="filter-input" placeholder="Enter domain or URL text..." data-filter-id="0">
+        <select class="operator-select" data-filter-id="0" style="display: none;">
+          <option value="include">Include</option>
+          <option value="exclude">Exclude</option>
+        </select>
+        <select class="time-range-select" id="time-range">
+          <option value="48hours">Past 48 hours</option>
+          <option value="week" selected>Past week</option>
+          <option value="month">Past month</option>
+          <option value="year">Past year</option>
+        </select>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <button class="add-filter-btn" id="add-filter">Add Filter</button>
+      <button class="clear-filters-btn" id="clear-filters" style="display: none;">Clear filters</button>
+      <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-secondary); cursor: pointer;">
+        <input type="checkbox" id="show-titles" checked>
+        Show titles
+      </label>
+    </div>
+    <div class="results-header" id="results-header" style="display: none;">
+      <div class="results-count" id="results-count"></div>
+      <a href="#" class="open-all-link" id="open-all-btn">Open in a new window</a>
+    </div>
+  </div>
+  
+  <div class="results-container">
+    <div class="loading" id="loading">Start typing to search history...</div>
+    <div id="results-list"></div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
