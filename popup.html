@@ -32,7 +32,7 @@
     }
 
     body {
-      width: 500px;
+      width: 600px;
       height: 600px;
       margin: 0;
       padding: 0;
@@ -85,7 +85,6 @@
       background: var(--bg-secondary);
       color: var(--text-primary);
       min-width: 90px;
-      font-size: 14px;
     }
     
     
@@ -152,11 +151,22 @@
     .result-item {
       padding: 8px 0;
       border-bottom: 1px solid var(--border-light);
-      font-size: 13px;
+      font-size: 12px;
+      position: relative;
     }
     
     .result-item:last-child {
       border-bottom: none;
+    }
+    
+    .result-item.open-in-tab::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--accent-primary);
     }
     
     .result-url {
@@ -165,7 +175,10 @@
       display: block;
       word-break: break-all;
       overflow-wrap: break-word;
+      cursor: pointer;
+      font-size: 12px;
     }
+
     
     .result-title {
       color: var(--text-secondary);
@@ -238,7 +251,7 @@
       background: transparent;
       color: var(--text-primary);
       text-decoration: underline;
-      text-decoration-color: var(--text-primary);
+      text-decoration-color: var(--text-muted);
       text-decoration-thickness: 1px;
       text-underline-offset: 4px;
     }
@@ -339,6 +352,10 @@
       <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-secondary); cursor: pointer;">
         <input type="checkbox" id="show-titles" checked>
         Show titles
+      </label>
+      <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-secondary); cursor: pointer;">
+        <input type="checkbox" id="show-only-open-tabs">
+        Show only open tabs
       </label>
     </div>
     <div class="results-header" id="results-header" style="display: none;">

@@ -18,6 +18,11 @@ class HistoryFilter {
     const showTitles = savedShowTitles !== null ? JSON.parse(savedShowTitles) : true;
     document.getElementById('show-titles').checked = showTitles;
     
+    // Load saved show only open tabs preference (default to false)
+    const savedShowOnlyOpenTabs = localStorage.getItem('historyFilterShowOnlyOpenTabs');
+    const showOnlyOpenTabs = savedShowOnlyOpenTabs !== null ? JSON.parse(savedShowOnlyOpenTabs) : false;
+    document.getElementById('show-only-open-tabs').checked = showOnlyOpenTabs;
+    
     // Load saved filters
     this.loadSavedFilters();
     
@@ -56,7 +61,16 @@ class HistoryFilter {
       }
       
       this.historyItems = await chrome.history.search(searchParams);
+      
+      // Get all currently open tabs
+      const openTabs = await chrome.tabs.query({});
+      this.openTabsMap = new Map();
+      openTabs.forEach(tab => {
+        this.openTabsMap.set(tab.url, tab.id);
+      });
+      
       console.log(`Loaded ${this.historyItems.length} history items (${timeRange})`);
+      console.log(`Found ${this.openTabsMap.size} open tabs`);
     } catch (error) {
       console.error('Error loading history:', error);
     }
@@ -74,6 +88,13 @@ class HistoryFilter {
       // Save the show titles preference
       localStorage.setItem('historyFilterShowTitles', JSON.stringify(e.target.checked));
       this.displayResults(this.currentFilteredItems);
+    });
+
+    const showOnlyOpenTabsCheckbox = document.getElementById('show-only-open-tabs');
+    showOnlyOpenTabsCheckbox.addEventListener('change', (e) => {
+      // Save the show only open tabs preference
+      localStorage.setItem('historyFilterShowOnlyOpenTabs', JSON.stringify(e.target.checked));
+      this.applyFilters();
     });
 
     const openAllBtn = document.getElementById('open-all-btn');
@@ -146,13 +167,20 @@ class HistoryFilter {
 
   applyFilters() {
     const activeFilters = this.filters.filter(f => f.value.trim() !== '');
+    const showOnlyOpenTabs = document.getElementById('show-only-open-tabs').checked;
     
-    if (activeFilters.length === 0) {
+    if (activeFilters.length === 0 && !showOnlyOpenTabs) {
       this.displayResults([]);
       return;
     }
 
     let filteredItems = this.historyItems;
+    
+    // First apply open tabs filter if enabled
+    if (showOnlyOpenTabs && this.openTabsMap) {
+      filteredItems = filteredItems.filter(item => this.openTabsMap.has(item.url));
+      console.log(`After open tabs filter: ${filteredItems.length} results`);
+    }
 
     for (let i = 0; i < activeFilters.length; i++) {
       const filter = activeFilters[i];
@@ -161,7 +189,7 @@ class HistoryFilter {
       console.log(`Filter ${i}: "${filterValue}", operator: "${filter.operator}", current results: ${filteredItems.length}`);
       
       if (i === 0) {
-        filteredItems = this.historyItems.filter(item => {
+        filteredItems = filteredItems.filter(item => {
           const url = item.url.toLowerCase();
           return url.includes(filterValue);
         });
@@ -181,6 +209,13 @@ class HistoryFilter {
           console.log(`After EXCLUDE filter ${i}: ${filteredItems.length} results`);
         }
       }
+    }
+
+    // If only showing open tabs with no text filters, display the results
+    if (showOnlyOpenTabs && activeFilters.length === 0) {
+      filteredItems.sort((a, b) => b.lastVisitTime - a.lastVisitTime);
+      this.displayResults(filteredItems);
+      return;
     }
 
     filteredItems.sort((a, b) => b.lastVisitTime - a.lastVisitTime);
@@ -424,10 +459,15 @@ class HistoryFilter {
         const showTitles = document.getElementById('show-titles').checked;
         const titleHtml = showTitles && item.title ? `<div class="result-title">${item.title}</div>` : '';
         
+        // Check if this URL is currently open in a tab
+        const isOpenInTab = this.openTabsMap && this.openTabsMap.has(item.url);
+        const openTabClass = isOpenInTab ? ' open-in-tab' : '';
+        const tabId = isOpenInTab ? this.openTabsMap.get(item.url) : null;
+        
         resultsHtml += `
-          <div class="result-item">
+          <div class="result-item${openTabClass}" data-url="${item.url}" ${tabId ? `data-tab-id="${tabId}"` : ''}>
             ${titleHtml}
-            <a href="${item.url}" class="result-url" target="_blank" title="${item.url}">
+            <a href="${item.url}" class="result-url" ${isOpenInTab ? '' : 'target="_blank"'} title="${item.url}">
               ${highlightedUrl}
             </a>
           </div>
@@ -447,6 +487,35 @@ class HistoryFilter {
     }
 
     resultsContainer.innerHTML = resultsHtml;
+    
+    // Add click listeners for result items
+    resultsContainer.querySelectorAll('.result-item').forEach(item => {
+      item.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const tabId = item.dataset.tabId;
+        const url = item.dataset.url;
+        
+        if (tabId) {
+          // Switch to existing tab
+          try {
+            await chrome.tabs.update(parseInt(tabId), { active: true });
+            // Bring the window to focus
+            const tab = await chrome.tabs.get(parseInt(tabId));
+            await chrome.windows.update(tab.windowId, { focused: true });
+            window.close();
+          } catch (error) {
+            console.error('Error switching to tab:', error);
+            // Fallback: open in new tab if switching fails
+            chrome.tabs.create({ url: url });
+            window.close();
+          }
+        } else {
+          // Open in new tab
+          chrome.tabs.create({ url: url });
+          window.close();
+        }
+      });
+    });
     
     // Add show more event listener
     const showMoreLink = document.getElementById('show-more-link');
