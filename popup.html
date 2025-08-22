@@ -29,6 +29,23 @@
         --accent-danger: #e74c3c;
         --accent-success: #00b894;
       }
+      
+      /* Dark mode dropdown arrows */
+      .operator-select,
+      .time-range-select,
+      .search-field-select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b4b4b4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      }
+      
+      /* Dark mode dropdown options */
+      .operator-select option,
+      .time-range-select option,
+      .search-field-select option {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        border: none;
+        padding: 8px;
+      }
     }
 
     body {
@@ -70,31 +87,55 @@
     }
     
     .operator-select {
-      padding: 8px;
+      padding: 8px 24px 8px 8px;
       border: 1px solid var(--border-color);
       border-radius: 4px;
       background: var(--bg-secondary);
       color: var(--text-primary);
       min-width: 60px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 12px;
     }
     
     .time-range-select {
-      padding: 8px;
+      padding: 8px 24px 8px 8px;
       border: 1px solid var(--border-color);
       border-radius: 4px;
       background: var(--bg-secondary);
       color: var(--text-primary);
       min-width: 90px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 12px;
     }
     
     .search-field-select {
-      padding: 8px;
+      padding: 8px 24px 8px 8px;
       border: 1px solid var(--border-color);
       border-radius: 4px;
       background: var(--bg-secondary);
       color: var(--text-primary);
       min-width: 70px;
-      font-size: 14px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      background-size: 12px;
+    }
+    
+    /* Dropdown options styling */
+    .operator-select option,
+    .time-range-select option,
+    .search-field-select option {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: none;
+      padding: 8px;
     }
     
     
@@ -370,7 +411,7 @@
       </label>
       <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-secondary); cursor: pointer;">
         <input type="checkbox" id="show-only-open-tabs">
-        Show open tabs
+        Show only open tabs
       </label>
     </div>
     <div class="results-header" id="results-header" style="display: none;">
