@@ -6,9 +6,10 @@ A powerful Chrome extension for searching and filtering your browser history wit
 
 ### 🔍 Advanced Filtering
 - **Stacked Filters**: Add multiple filter criteria that work together
-- **Include/Exclude Logic**: Each filter can include or exclude URLs containing specific text
+- **Include/Exclude Logic**: Each filter can include or exclude text matches
 - **Live Search**: Results update as you type
-- **URL-Only Search**: Filters search only URLs, not page titles or metadata
+- **Search Field Selection**: Choose to search in URLs or page titles for each filter
+- **Mixed Search Types**: Combine URL and title filters in the same search
 
 ### ⏰ Time Range Control
 - **Past 48 hours** - Recent browsing
@@ -27,54 +28,71 @@ Results are automatically organized by time periods:
 - Specific months (October 2024, September 2024, etc.)
 
 ### 🎨 Visual Features
-- **Search Highlighting**: Matching text is subtly underlined
+- **Search Highlighting**: Matching text is subtly underlined in URLs and titles
 - **Page Titles**: Toggle to show/hide page titles above URLs
+- **Open Tab Indicators**: Blue edge flags show which history items are currently open in tabs
 - **Dark/Light Theme**: Automatically follows your system theme
 - **Clean Interface**: Compact design with smooth scrolling
 - **No Horizontal Overflow**: Long URLs wrap properly
 
-### ⚡ Bulk Actions
+### ⚡ Smart Navigation
 - **Open All in New Window**: Open all filtered results as tabs in a new window
-- **Smart Limits**: Automatically limits to 100 URLs to prevent browser overload
+- **Smart Tab Switching**: Click items already open in tabs to switch to them instead of creating duplicates
+- **Tab Management**: Automatically focuses the correct browser window when switching tabs
+- **Smart Limits**: Automatically limits bulk operations to 100 URLs to prevent browser overload
 
 ### 💾 Persistent State
 The extension remembers your preferences:
 - Last selected time range
-- All filter text and Include/Exclude settings
+- All filter text, Include/Exclude settings, and URL/Title field selections
 - Show/hide titles preference
+- Show only open tabs preference
 - Number of active filters
 
 ### 🧹 Easy Management
 - **Clear Filters**: One-click button to reset all filters (appears when needed)
 - **Remove Individual Filters**: Remove specific filters with dedicated buttons
+- **Tab-Only View**: Toggle to show only history items that are currently open in tabs
 - **Smart UI**: Clear button only shows when you have active filters
 
 ## How to Use
 
 ### Basic Search
 1. Click the extension icon
-2. Type in the search box (e.g., "youtube.com")
-3. See filtered results organized by date
+2. Choose search field: **URL** or **Title** from the dropdown
+3. Type in the search box (e.g., "youtube.com" for URL or "tutorial" for Title)
+4. See filtered results organized by date
 
 ### Advanced Filtering
 1. Add additional filters with "Add Filter" button
-2. Choose **Include** to show URLs containing the text
-3. Choose **Exclude** to hide URLs containing the text
-4. Stack multiple criteria for precise results
+2. For each filter, choose:
+   - **Search Field**: URL or Title
+   - **Logic**: Include or Exclude
+   - **Search Text**: The text to match
+3. Stack multiple criteria for precise results
 
 ### Example Workflows
 
 **Find recent social media visits:**
-- Filter 1: "twitter.com" (Include)
+- Filter 1: URL → "twitter.com" (Include)
 - Time range: "Past week"
 
 **Find YouTube videos but not ads:**
-- Filter 1: "youtube.com" (Include)  
-- Filter 2: "ads" (Exclude)
+- Filter 1: URL → "youtube.com" (Include)  
+- Filter 2: URL → "ads" (Exclude)
 
-**Research from last month:**
-- Filter 1: "github.com" (Include)
+**Find React tutorials:**
+- Filter 1: Title → "react" (Include)
+- Filter 2: Title → "tutorial" (Include)
+
+**Research from specific site:**
+- Filter 1: URL → "github.com" (Include)
+- Filter 2: Title → "typescript" (Include)
 - Time range: "Past month"
+
+**Manage open tabs:**
+- Check "Show only open tabs" to see which history items are currently open
+- Click blue-flagged items to switch to existing tabs instead of opening new ones
 
 ### Bulk Operations
 1. Filter to your desired results
@@ -91,10 +109,12 @@ The extension remembers your preferences:
 ## Technical Details
 
 - **Manifest Version**: 3
-- **Permissions**: History access, tab management
-- **Storage**: Uses localStorage for preferences
+- **Permissions**: History access, tab management, active tab detection
+- **Storage**: Uses localStorage for preferences and filter persistence
 - **Theme Support**: CSS variables with system theme detection
 - **Performance**: Efficient filtering with up to 100,000 history items
+- **Search Types**: Dual-mode searching in URLs and page titles
+- **Tab Integration**: Real-time open tab detection and smart navigation
 
 ## Privacy
 

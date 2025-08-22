@@ -87,6 +87,16 @@
       min-width: 90px;
     }
     
+    .search-field-select {
+      padding: 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      min-width: 70px;
+      font-size: 14px;
+    }
+    
     
     /* Primary button style */
     .btn-primary {
@@ -333,7 +343,11 @@
   <div class="filter-container">
     <div id="filters-list">
       <div class="filter-row">
-        <input type="text" class="filter-input" placeholder="Enter domain or URL text..." data-filter-id="0">
+        <select class="search-field-select" data-filter-id="0">
+          <option value="url" selected>URL</option>
+          <option value="title">Title</option>
+        </select>
+        <input type="text" class="filter-input" placeholder="Enter search text..." data-filter-id="0">
         <select class="operator-select" data-filter-id="0" style="display: none;">
           <option value="include">Include</option>
           <option value="exclude">Exclude</option>

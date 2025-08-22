@@ -1,6 +1,6 @@
 class HistoryFilter {
   constructor() {
-    this.filters = [{ id: 0, value: '', operator: 'include' }];
+    this.filters = [{ id: 0, value: '', operator: 'include', searchField: 'url' }];
     this.filterId = 0;
     this.historyItems = [];
     this.currentFilteredItems = [];
@@ -100,16 +100,27 @@ class HistoryFilter {
     const openAllBtn = document.getElementById('open-all-btn');
     openAllBtn.addEventListener('click', () => this.openAllInNewWindow());
 
-    const timeRangeSelect = document.getElementById('time-range');
-    timeRangeSelect.addEventListener('change', (e) => {
-      // Save the selected time range
-      localStorage.setItem('historyFilterTimeRange', e.target.value);
-      this.loadHistory(e.target.value).then(() => {
-        this.applyFilters();
-      });
-    });
+    // Time range event listener is set up after filters are created
+    this.setupTimeRangeListener();
 
     this.setupFilterListener(0);
+  }
+
+  setupTimeRangeListener() {
+    const timeRangeSelect = document.getElementById('time-range');
+    if (timeRangeSelect) {
+      // Remove any existing listener to prevent duplicates
+      const newTimeRangeSelect = timeRangeSelect.cloneNode(true);
+      timeRangeSelect.parentNode.replaceChild(newTimeRangeSelect, timeRangeSelect);
+      
+      newTimeRangeSelect.addEventListener('change', (e) => {
+        // Save the selected time range
+        localStorage.setItem('historyFilterTimeRange', e.target.value);
+        this.loadHistory(e.target.value).then(() => {
+          this.applyFilters();
+        });
+      });
+    }
   }
 
   setupFilterListener(filterId) {
@@ -121,10 +132,18 @@ class HistoryFilter {
       });
     }
 
-    const select = document.querySelector(`select[data-filter-id="${filterId}"]`);
-    if (select) {
-      select.addEventListener('change', (e) => {
+    const operatorSelect = document.querySelector(`select[data-filter-id="${filterId}"].operator-select`);
+    if (operatorSelect) {
+      operatorSelect.addEventListener('change', (e) => {
         this.updateOperator(filterId, e.target.value);
+        this.applyFilters();
+      });
+    }
+
+    const searchFieldSelect = document.querySelector(`select[data-filter-id="${filterId}"].search-field-select`);
+    if (searchFieldSelect) {
+      searchFieldSelect.addEventListener('change', (e) => {
+        this.updateSearchField(filterId, e.target.value);
         this.applyFilters();
       });
     }
@@ -132,7 +151,7 @@ class HistoryFilter {
 
   addFilter() {
     this.filterId++;
-    const newFilter = { id: this.filterId, value: '', operator: 'include' };
+    const newFilter = { id: this.filterId, value: '', operator: 'include', searchField: 'url' };
     this.filters.push(newFilter);
 
     this.createFilterRow(newFilter);
@@ -165,6 +184,14 @@ class HistoryFilter {
     }
   }
 
+  updateSearchField(filterId, searchField) {
+    const filter = this.filters.find(f => f.id === filterId);
+    if (filter) {
+      filter.searchField = searchField;
+      this.saveFilters();
+    }
+  }
+
   applyFilters() {
     const activeFilters = this.filters.filter(f => f.value.trim() !== '');
     const showOnlyOpenTabs = document.getElementById('show-only-open-tabs').checked;
@@ -190,23 +217,38 @@ class HistoryFilter {
       
       if (i === 0) {
         filteredItems = filteredItems.filter(item => {
-          const url = item.url.toLowerCase();
-          return url.includes(filterValue);
+          if (filter.searchField === 'title') {
+            const title = (item.title || '').toLowerCase();
+            return title.includes(filterValue);
+          } else {
+            const url = item.url.toLowerCase();
+            return url.includes(filterValue);
+          }
         });
-        console.log(`After base filter ${i}: ${filteredItems.length} results`);
+        console.log(`After base filter ${i} (${filter.searchField}): ${filteredItems.length} results`);
       } else {
         if (filter.operator === 'include') {
           filteredItems = filteredItems.filter(item => {
-            const url = item.url.toLowerCase();
-            return url.includes(filterValue);
+            if (filter.searchField === 'title') {
+              const title = (item.title || '').toLowerCase();
+              return title.includes(filterValue);
+            } else {
+              const url = item.url.toLowerCase();
+              return url.includes(filterValue);
+            }
           });
-          console.log(`After INCLUDE filter ${i}: ${filteredItems.length} results`);
+          console.log(`After INCLUDE filter ${i} (${filter.searchField}): ${filteredItems.length} results`);
         } else if (filter.operator === 'exclude') {
           filteredItems = filteredItems.filter(item => {
-            const url = item.url.toLowerCase();
-            return !url.includes(filterValue);
+            if (filter.searchField === 'title') {
+              const title = (item.title || '').toLowerCase();
+              return !title.includes(filterValue);
+            } else {
+              const url = item.url.toLowerCase();
+              return !url.includes(filterValue);
+            }
           });
-          console.log(`After EXCLUDE filter ${i}: ${filteredItems.length} results`);
+          console.log(`After EXCLUDE filter ${i} (${filter.searchField}): ${filteredItems.length} results`);
         }
       }
     }
@@ -276,8 +318,15 @@ class HistoryFilter {
       const saved = localStorage.getItem('historyFilterState');
       if (saved) {
         const filterData = JSON.parse(saved);
-        this.filters = filterData.filters || [{ id: 0, value: '', operator: 'include' }];
+        this.filters = filterData.filters || [{ id: 0, value: '', operator: 'include', searchField: 'url' }];
         this.filterId = filterData.nextId || 0;
+        
+        // Add searchField for backward compatibility
+        this.filters.forEach(filter => {
+          if (!filter.searchField) {
+            filter.searchField = 'url';
+          }
+        });
         
         // Recreate filter UI
         const filtersContainer = document.getElementById('filters-list');
@@ -287,19 +336,22 @@ class HistoryFilter {
           this.createFilterRow(filter);
         });
         
+        // Re-setup time range listener after DOM is recreated
+        this.setupTimeRangeListener();
+        
         this.updateClearButtonVisibility();
       }
     } catch (error) {
       console.error('Error loading saved filters:', error);
       // Fallback to default
-      this.filters = [{ id: 0, value: '', operator: 'include' }];
+      this.filters = [{ id: 0, value: '', operator: 'include', searchField: 'url' }];
       this.filterId = 0;
     }
   }
 
   clearAllFilters() {
     // Reset to single empty filter
-    this.filters = [{ id: 0, value: '', operator: 'include' }];
+    this.filters = [{ id: 0, value: '', operator: 'include', searchField: 'url' }];
     this.filterId = 0;
     
     // Clear localStorage
@@ -309,6 +361,9 @@ class HistoryFilter {
     const filtersContainer = document.getElementById('filters-list');
     filtersContainer.innerHTML = '';
     this.createFilterRow(this.filters[0]);
+    
+    // Re-setup time range listener after DOM is recreated
+    this.setupTimeRangeListener();
     
     // Update visibility and apply filters
     this.updateClearButtonVisibility();
@@ -327,10 +382,14 @@ class HistoryFilter {
     filterRow.className = 'filter-row';
     
     if (filter.id === 0) {
-      // First filter (no operator dropdown, has time range)
+      // First filter (search field dropdown, filter input, time range)
       const savedTimeRange = localStorage.getItem('historyFilterTimeRange') || 'week';
       filterRow.innerHTML = `
-        <input type="text" class="filter-input" placeholder="Enter domain or URL text..." data-filter-id="${filter.id}" value="${filter.value}">
+        <select class="search-field-select" data-filter-id="${filter.id}">
+          <option value="url" ${filter.searchField === 'url' ? 'selected' : ''}>URL</option>
+          <option value="title" ${filter.searchField === 'title' ? 'selected' : ''}>Title</option>
+        </select>
+        <input type="text" class="filter-input" placeholder="Enter search text..." data-filter-id="${filter.id}" value="${filter.value}">
         <select class="operator-select" data-filter-id="${filter.id}" style="display: none;">
           <option value="include">Include</option>
           <option value="exclude">Exclude</option>
@@ -343,13 +402,17 @@ class HistoryFilter {
         </select>
       `;
     } else {
-      // Additional filters
+      // Additional filters (search field dropdown, operator dropdown, filter input, remove button)
       filterRow.innerHTML = `
+        <select class="search-field-select" data-filter-id="${filter.id}">
+          <option value="url" ${filter.searchField === 'url' ? 'selected' : ''}>URL</option>
+          <option value="title" ${filter.searchField === 'title' ? 'selected' : ''}>Title</option>
+        </select>
         <select class="operator-select" data-filter-id="${filter.id}">
           <option value="include" ${filter.operator === 'include' ? 'selected' : ''}>Include</option>
           <option value="exclude" ${filter.operator === 'exclude' ? 'selected' : ''}>Exclude</option>
         </select>
-        <input type="text" class="filter-input" placeholder="Enter domain or URL text..." data-filter-id="${filter.id}" value="${filter.value}">
+        <input type="text" class="filter-input" placeholder="Enter search text..." data-filter-id="${filter.id}" value="${filter.value}">
         <button class="btn-secondary btn-secondary-icon" data-filter-id="${filter.id}">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M3 6h18m-2 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
@@ -368,14 +431,21 @@ class HistoryFilter {
   }
 
   highlightMatches(text, searchTerms) {
-    let highlightedText = text;
-    searchTerms.forEach(term => {
-      if (term.trim()) {
-        const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-        highlightedText = highlightedText.replace(regex, '<span class="highlight">$1</span>');
-      }
-    });
-    return highlightedText;
+    // Remove any existing highlight tags first to prevent nested highlights
+    let cleanText = text.replace(/<span class="highlight">(.*?)<\/span>/gi, '$1');
+    
+    // Create a single regex pattern for all search terms
+    const validTerms = searchTerms.filter(term => term.trim());
+    if (validTerms.length === 0) {
+      return cleanText;
+    }
+    
+    // Escape special regex characters and create alternation pattern
+    const escapedTerms = validTerms.map(term => term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const combinedPattern = `(${escapedTerms.join('|')})`;
+    const regex = new RegExp(combinedPattern, 'gi');
+    
+    return cleanText.replace(regex, '<span class="highlight">$1</span>');
   }
 
   getTimeGroupLabel(timestamp) {
@@ -429,9 +499,10 @@ class HistoryFilter {
       resultsCount.textContent = `${items.length} result${items.length !== 1 ? 's' : ''}`;
     }
 
-    // Get all active filter terms for highlighting
+    // Get active filter terms separated by search field for highlighting
     const activeFilters = this.filters.filter(f => f.value.trim() !== '');
-    const searchTerms = activeFilters.map(f => f.value.trim());
+    const urlSearchTerms = activeFilters.filter(f => f.searchField === 'url').map(f => f.value.trim());
+    const titleSearchTerms = activeFilters.filter(f => f.searchField === 'title').map(f => f.value.trim());
 
     // Group items by time periods
     const groupedItems = {};
@@ -455,9 +526,10 @@ class HistoryFilter {
       
       // Add items in this group
       groupedItems[groupLabel].forEach(item => {
-        const highlightedUrl = this.highlightMatches(item.url, searchTerms);
+        const highlightedUrl = this.highlightMatches(item.url, urlSearchTerms);
         const showTitles = document.getElementById('show-titles').checked;
-        const titleHtml = showTitles && item.title ? `<div class="result-title">${item.title}</div>` : '';
+        const highlightedTitle = showTitles && item.title ? this.highlightMatches(item.title, titleSearchTerms) : '';
+        const titleHtml = showTitles && item.title ? `<div class="result-title">${highlightedTitle}</div>` : '';
         
         // Check if this URL is currently open in a tab
         const isOpenInTab = this.openTabsMap && this.openTabsMap.has(item.url);
