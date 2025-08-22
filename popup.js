@@ -4,6 +4,7 @@ class HistoryFilter {
     this.filterId = 0;
     this.historyItems = [];
     this.currentFilteredItems = [];
+    this.displayedCount = 100;
     this.init();
   }
 
@@ -186,6 +187,12 @@ class HistoryFilter {
     this.displayResults(filteredItems);
   }
 
+  showMoreResults() {
+    const nextBatch = Math.min(this.displayedCount + 100, this.currentFilteredItems.length);
+    this.displayedCount = nextBatch;
+    this.displayResults(this.currentFilteredItems, true);
+  }
+
   extractDomain(url) {
     try {
       return new URL(url).hostname;
@@ -308,7 +315,11 @@ class HistoryFilter {
           <option value="exclude" ${filter.operator === 'exclude' ? 'selected' : ''}>Exclude</option>
         </select>
         <input type="text" class="filter-input" placeholder="Enter domain or URL text..." data-filter-id="${filter.id}" value="${filter.value}">
-        <button class="remove-filter" data-filter-id="${filter.id}">Remove</button>
+        <button class="btn-secondary btn-secondary-icon" data-filter-id="${filter.id}">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 6h18m-2 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       `;
     }
 
@@ -316,7 +327,7 @@ class HistoryFilter {
     this.setupFilterListener(filter.id);
 
     if (filter.id !== 0) {
-      const removeBtn = filterRow.querySelector('.remove-filter');
+      const removeBtn = filterRow.querySelector('.btn-secondary-icon');
       removeBtn.addEventListener('click', () => this.removeFilter(filter.id, filterRow));
     }
   }
@@ -362,23 +373,26 @@ class HistoryFilter {
     }
   }
 
-  displayResults(items) {
+  displayResults(items, append = false) {
     const resultsContainer = document.getElementById('results-list');
     const loadingDiv = document.getElementById('loading');
     const resultsHeader = document.getElementById('results-header');
     const resultsCount = document.getElementById('results-count');
     
-    this.currentFilteredItems = items;
-    loadingDiv.style.display = 'none';
-    
-    if (items.length === 0) {
-      resultsHeader.style.display = 'none';
-      resultsContainer.innerHTML = '<div class="no-results">No matching history items found</div>';
-      return;
-    }
+    if (!append) {
+      this.currentFilteredItems = items;
+      this.displayedCount = Math.min(100, items.length);
+      loadingDiv.style.display = 'none';
+      
+      if (items.length === 0) {
+        resultsHeader.style.display = 'none';
+        resultsContainer.innerHTML = '<div class="no-results">No matching history items found</div>';
+        return;
+      }
 
-    resultsHeader.style.display = 'flex';
-    resultsCount.textContent = `${items.length} result${items.length !== 1 ? 's' : ''}`;
+      resultsHeader.style.display = 'flex';
+      resultsCount.textContent = `${items.length} result${items.length !== 1 ? 's' : ''}`;
+    }
 
     // Get all active filter terms for highlighting
     const activeFilters = this.filters.filter(f => f.value.trim() !== '');
@@ -386,7 +400,7 @@ class HistoryFilter {
 
     // Group items by time periods
     const groupedItems = {};
-    const displayItems = items.slice(0, 100);
+    const displayItems = items.slice(0, this.displayedCount);
     
     displayItems.forEach(item => {
       const groupLabel = this.getTimeGroupLabel(item.lastVisitTime);
@@ -421,7 +435,27 @@ class HistoryFilter {
       });
     });
 
+    // Add pagination if there are more results
+    if (items.length > this.displayedCount) {
+      const remaining = items.length - this.displayedCount;
+      resultsHtml += `
+        <div class="pagination">
+          Showing ${this.displayedCount}/${items.length} results
+          <a href="#" class="show-more-link" id="show-more-link">Show more</a>
+        </div>
+      `;
+    }
+
     resultsContainer.innerHTML = resultsHtml;
+    
+    // Add show more event listener
+    const showMoreLink = document.getElementById('show-more-link');
+    if (showMoreLink) {
+      showMoreLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.showMoreResults();
+      });
+    }
   }
 }
 

@@ -88,17 +88,9 @@
       font-size: 14px;
     }
     
-    .remove-filter {
-      background: var(--accent-danger);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-size: 14px;
-    }
     
-    .add-filter-btn {
+    /* Primary button style */
+    .btn-primary {
       background: var(--accent-primary);
       color: white;
       border: none;
@@ -106,9 +98,16 @@
       padding: 8px 16px;
       cursor: pointer;
       font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s ease;
     }
 
-    .clear-filters-btn {
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    /* Secondary button style */
+    .btn-secondary {
       background: var(--border-light);
       color: white;
       border: none;
@@ -116,6 +115,29 @@
       padding: 8px 16px;
       cursor: pointer;
       font-size: 14px;
+      font-weight: 500;
+      transition: background 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-color);
+    }
+
+    /* Secondary icon button style (square for icons) - inherits colors from .btn-secondary */
+    .btn-secondary-icon {
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-secondary-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .btn-secondary-icon svg path {
+      stroke: white;
     }
     
     .results-container {
@@ -167,6 +189,7 @@
       text-align: center;
       color: var(--text-muted);
       padding: 20px;
+      font-size: 14px;
     }
     
     .results-header {
@@ -239,7 +262,7 @@
       appearance: none;
       width: 16px;
       height: 16px;
-      border: 2px solid var(--border-color);
+      border: 1px solid var(--border-color);
       border-radius: 3px;
       background: var(--bg-secondary);
       cursor: pointer;
@@ -255,7 +278,7 @@
       content: "✓";
       position: absolute;
       top: -2px;
-      left: 1px;
+      left: 3px;
       color: white;
       font-size: 12px;
       font-weight: bold;
@@ -271,6 +294,24 @@
       font-size: 12px;
       margin-top: 2px;
       line-height: 1.3;
+    }
+
+    /* Pagination styling */
+    .pagination {
+      padding: 12px 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .show-more-link {
+      color: var(--accent-primary);
+      text-decoration: none;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+
+    .show-more-link:hover {
+      text-decoration: underline;
     }
 
   </style>
@@ -293,8 +334,8 @@
       </div>
     </div>
     <div style="display: flex; gap: 8px; align-items: center;">
-      <button class="add-filter-btn" id="add-filter">Add Filter</button>
-      <button class="clear-filters-btn" id="clear-filters" style="display: none;">Clear filters</button>
+      <button class="btn-primary" id="add-filter">Add Filter</button>
+      <button class="btn-secondary" id="clear-filters" style="display: none;">Clear filters</button>
       <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-secondary); cursor: pointer;">
         <input type="checkbox" id="show-titles" checked>
         Show titles
