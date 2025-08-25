@@ -1,6 +1,6 @@
-# Search History
+# Search History & Tab Manager
 
-A powerful Chrome extension for searching and filtering your browser history with advanced criteria and bulk actions.
+A powerful Chrome extension for searching and filtering your browser history, managing open tabs, and restoring closed windows with advanced features and intuitive organization.
 
 ## Features
 
@@ -43,17 +43,50 @@ Results are automatically organized by time periods:
 
 ### 💾 Persistent State
 The extension remembers your preferences:
-- Last selected time range
+- **Active Tab Memory**: Remembers which tab you were last viewing
+- Last selected time range (History tab)
 - All filter text, Include/Exclude settings, and URL/Title field selections
-- Show/hide titles preference
-- Show only open tabs preference
+- Show/hide titles preference (History tab)
+- Filter preferences for both History and Tabs tabs
 - Number of active filters
 
 ### 🧹 Easy Management
 - **Clear Filters**: One-click button to reset all filters (appears when needed)
 - **Remove Individual Filters**: Remove specific filters with dedicated buttons
-- **Tab-Only View**: Toggle to show only history items that are currently open in tabs
 - **Smart UI**: Clear button only shows when you have active filters
+- **Dedicated Tabs Section**: Complete tab management in separate, optimized interface
+
+### 🪟 Window Management Hub
+- **Complete Window Overview**: See all currently open windows and recently closed windows in one place
+- **Chrome Native Integration**: Access Chrome's built-in recently closed sessions alongside custom tracking
+- **Session Preservation**: Automatically saves Chrome's sessions to localStorage when loaded to prevent data loss
+- **Visual Distinction**: Open windows (blue edge), Chrome native (green + [CHROME]), preserved (green + [SAVED]), custom (no edge)
+- **Triple Tracking System**: Fresh Chrome sessions + preserved Chrome sessions + custom persistent tracking
+- **Automatic Tracking**: Extension automatically tracks when you close windows using multiple methods
+- **Persistent Storage**: All closed windows are saved locally and persist across browser sessions and restarts
+- **Quick Identification**: See tab count, domains, and status for each window with clear source indicators
+- **Smart Actions**: Focus open windows or restore closed ones with one click (uses appropriate restoration method)
+- **Smart Limits**: Keeps 25 Chrome sessions + 50 custom closed windows for optimal performance
+- **Domain Preview**: Comma-separated list of domains helps you identify the right window quickly
+- **Relative Timestamps**: Human-readable time display (e.g., "5 mins ago", "Yesterday", "Last week", "25 Aug")
+
+### 📑 Complete Tab Management
+- **All Open Tabs View**: See all tabs from all windows organized by parent window
+- **Tab Search & Filtering**: Full search/filtering capabilities for open tabs (same as history)
+- **Window-Based Organization**: Tabs grouped by browser window with sticky headers
+- **Instant Tab Switching**: Click any tab to switch to it instantly (focuses correct window)
+- **Active Tab Indicators**: Visual indicators for currently active tabs
+- **Sticky Window Headers**: Window headers stick to top while scrolling for easy navigation
+- **No Time Filtering**: Optimized for current tabs (no date ranges needed)
+- **Smart Defaults**: Title search by default for more intuitive tab finding
+- **Complete Overview**: See all your open tabs in one organized view
+
+### 🎯 Intelligent Interface
+- **Tab Memory**: Extension remembers and restores your last active tab
+- **Contextual Controls**: Clear filters button only appears when you have active filters
+- **Streamlined Design**: Removed unnecessary controls for cleaner experience
+- **Smart Separation**: History (past) vs Tabs (present) clearly separated
+- **Adaptive UI**: Interface adapts based on what you're doing
 
 ## How to Use
 
@@ -91,13 +124,93 @@ The extension remembers your preferences:
 - Time range: "Past month"
 
 **Manage open tabs:**
-- Check "Show only open tabs" to see which history items are currently open
-- Click blue-flagged items to switch to existing tabs instead of opening new ones
+- Switch to the **"Tabs"** tab for complete open tab management
+- Use the same search and filtering as history for finding specific tabs
+- Click any tab to switch to it instantly
+- See all tabs organized by their parent browser window
 
 ### Bulk Operations
 1. Filter to your desired results
 2. Click "Open in a new window" to open all URLs as tabs
 3. Extension automatically closes after opening tabs
+
+### Window Management
+1. Click the extension icon and switch to the **"Windows"** tab
+2. **Open Windows** (with blue accent edge):
+   - See all your currently open browser windows
+   - Shows active tab title and tab count
+   - Click **"Focus"** to switch to that window
+3. **Chrome Native Sessions** (with green accent edge and [CHROME] label):
+   - Fresh recently closed windows from Chrome's built-in tracking (when available)
+   - Most up-to-date and reliable for very recent closures
+   - Click **"Restore"** to use Chrome's native restoration method
+   - May not appear if Chrome sessions API is unavailable
+4. **Preserved Chrome Sessions** (with green accent edge and [SAVED] label):
+   - Chrome sessions that we've saved to localStorage for long-term retention
+   - These persist even after Chrome drops them from its native list
+   - Automatically preserved when Chrome's sessions are loaded
+5. **Custom Closed Windows** (no accent edge):
+   - Windows tracked by our extension for maximum persistence
+   - Survive browser restarts and work across devices (with sync)
+   - Click **"Restore"** to reopen with all tabs
+   - Use **"Clear All"** to remove all stored custom closed windows
+6. All window types are automatically tracked when you close them (no manual action needed)
+
+**Window Management Examples:**
+
+**Switch between work sessions:**
+- See all open windows with blue edges: "12 tabs - Active 'Jira Dashboard'"
+- Click "Focus" to switch to your work window instantly
+
+**Lost a research session:**
+- Find closed window: "8 tabs - Closed 5 mins ago - google.com, stackoverflow.com, github.com, ..."
+- Click "Restore" to get back all your research tabs
+
+**Review recent activity:**
+- Chrome sessions: "15 tabs - Closed 2 hours ago - youtube.com, twitter.com, reddit.com"
+- Your custom: "6 tabs - Closed Yesterday - github.com, stackoverflow.com"
+- Old sessions: "10 tabs - Closed 25 Aug - various research sites"
+
+**Quick window overview:**
+- Get a complete picture of all your browser windows in one glance
+- Easily identify which window contains specific websites by the domain preview
+
+### Tab Management
+1. Click the extension icon and switch to the **"Tabs"** tab
+2. **View All Open Tabs**:
+   - See every tab from all your browser windows
+   - Organized by parent window with sticky headers
+   - Active tabs are highlighted with blue accent
+3. **Search & Filter Tabs**:
+   - Use the same powerful filtering as history
+   - Search by URL or Title (Title is default for better usability)
+   - Add multiple filters with Include/Exclude logic
+   - Clear filters button only appears when needed
+4. **Navigate Between Tabs**:
+   - Click any tab to switch to it instantly
+   - Extension focuses the correct browser window automatically
+   - No duplicate tabs created - switches to existing ones
+5. **Window Organization**:
+   - Tabs grouped under window headers (e.g., "Window: YouTube - Main")
+   - Sticky headers stay visible while scrolling
+   - Easy to see which tabs belong to which window
+
+**Tab Management Examples:**
+
+**Find a specific research tab:**
+- Filter by Title: "machine learning"
+- See all matching tabs across all windows
+- Click to jump directly to the tab
+
+**Organize your browsing:**
+- Scroll through all open tabs by window
+- Use sticky headers to track your location
+- Quickly identify and switch between work/personal/research windows
+
+**Clean up tabs:**
+- Filter by URL to find all tabs from a specific site
+- Use advanced filters to find tabs by multiple criteria
+- Easy bulk navigation without opening new tabs
 
 ## Installation
 
@@ -109,12 +222,20 @@ The extension remembers your preferences:
 ## Technical Details
 
 - **Manifest Version**: 3
-- **Permissions**: History access, tab management, active tab detection
-- **Storage**: Uses localStorage for preferences and filter persistence
+- **Permissions**: History access, tab management, active tab detection, window management, sessions API
+- **Storage**: Uses localStorage for preferences, filter persistence, closed window data, and active tab memory
 - **Theme Support**: CSS variables with system theme detection
-- **Performance**: Efficient filtering with up to 100,000 history items
-- **Search Types**: Dual-mode searching in URLs and page titles
-- **Tab Integration**: Real-time open tab detection and smart navigation
+- **Performance**: Efficient filtering with up to 100,000 history items + real-time tab management
+- **Search Types**: Dual-mode searching in URLs and page titles for both history and tabs
+- **Tab Integration**: Real-time open tab detection, smart navigation, and complete tab organization
+- **Window Tracking**: Complete window management with open/closed window tracking and session preservation
+- **Chrome Integration**: Leverages chrome.sessions API for native recently closed sessions (when available)
+- **Triple Interface**: History (past), Windows (management), Tabs (current) with intelligent separation
+- **Smart UI**: Contextual controls that appear/hide based on user actions and active filters
+- **Memory Features**: Remembers last active tab and user preferences across sessions
+- **Dual System**: Both custom persistent tracking (50 windows) and Chrome's native sessions
+- **Data Limits**: 50 custom closed windows + Chrome's native sessions, 100 results per search, unlimited tabs
+- **Privacy**: All data processing and storage happens locally with no external network requests
 
 ## Privacy
 
@@ -124,5 +245,6 @@ The extension remembers your preferences:
 
 ---
 
-**Version**: 1.0  
+**Version**: 1.1
 **Compatibility**: Chrome (Manifest V3)
+**New in 1.1**: Complete tab management, sticky headers, tab memory, and enhanced filtering

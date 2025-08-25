@@ -2,11 +2,13 @@
   "manifest_version": 3,
   "name": "Search History",
   "version": "1.0",
-  "description": "Search browser history with advanced filtering",
+  "description": "Search browser history and restore closed windows",
   "permissions": [
     "history",
     "activeTab",
-    "tabs"
+    "tabs",
+    "windows",
+    "sessions"
   ],
   "action": {
     "default_popup": "popup.html",

@@ -60,6 +60,47 @@
       flex-direction: column;
       overflow-x: hidden;
     }
+
+    /* Tab system styles */
+    .tab-container {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+    }
+
+    .tab-button {
+      background: transparent;
+      border: none;
+      padding: 12px 20px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .tab-button:hover {
+      color: var(--text-primary);
+      background: var(--border-light);
+    }
+
+    .tab-button.active {
+      color: var(--text-primary);
+      border-bottom-color: var(--accent-primary);
+      background: var(--bg-primary);
+    }
+
+    .tab-content {
+      display: none;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .tab-content.active {
+      display: flex;
+      flex-direction: column;
+    }
     
     
     .filter-container {
@@ -192,7 +233,7 @@
     
     .results-container {
       background: var(--bg-secondary);
-      padding: 8px 12px;
+      padding: 0px 12px 8px 12px;
       flex: 1;
       overflow-y: auto;
       overflow-x: hidden;
@@ -315,7 +356,15 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin: 16px 0 4px 0;
+      margin: 16px -12px 0 -12px;
+      position: sticky;
+      top: 0;
+      background: var(--bg-primary);
+      padding: 8px 12px;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 9999;
     }
 
     .date-group-header:first-child {
@@ -379,52 +428,271 @@
       text-decoration: underline;
     }
 
+    /* Windows tab styles */
+    .window-item {
+      padding: 8px 0px;
+      border-bottom: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: background 0.2s ease;
+      position: relative;
+      padding-left: 0px;
+    }
+
+
+    .window-item:last-child {
+      border-bottom: none;
+    }
+
+    .window-item.open-window::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--accent-primary);
+    }
+
+    .window-item.custom-tracked::after {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--accent-success);
+      border-radius: 1px;
+    }
+
+    .window-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .window-info {
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    .window-timestamp {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .window-domains-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-top: 4px;
+    }
+
+    .window-domains {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    .window-remove {
+      font-size: 12px;
+      color: var(--text-muted);
+      opacity: 0;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+      margin-left: 8px;
+      white-space: nowrap;
+    }
+
+    .window-item:hover .window-remove {
+      opacity: 1;
+    }
+
+    .window-remove:hover {
+      color: var(--text-primary);
+      transition: color 0.2s ease;
+    }
+
+    .window-save {
+      font-size: 12px;
+      color: var(--text-muted);
+      opacity: 0;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+      margin-left: 8px;
+      white-space: nowrap;
+    }
+
+    .window-item:hover .window-save {
+      opacity: 1;
+    }
+
+    .window-save:hover {
+      color: var(--text-primary);
+      transition: color 0.2s ease;
+    }
+
+    /* Tabs tab styles - matching history item styling */
+    .tab-item {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 12px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .tab-item:last-child {
+      border-bottom: none;
+    }
+
+    .tab-item.active-tab::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--accent-primary);
+    }
+
+    .tab-item .result-url {
+      color: var(--text-muted);
+      text-decoration: none;
+      display: block;
+      word-break: break-all;
+      overflow-wrap: break-word;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .tab-item .result-title {
+      color: var(--text-secondary);
+      margin-top: 2px;
+      font-size: 12px;
+    }
+
+    .active-indicator {
+      font-size: 11px;
+      color: var(--accent-primary);
+      font-weight: 500;
+      margin-left: 8px;
+      background: rgba(83, 82, 237, 0.1);
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+
+    .window-stats {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+
+
+    .no-windows {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 40px 20px;
+      font-size: 14px;
+    }
+
+
+
   </style>
 </head>
 <body>
-  <div class="filter-container">
-    <div id="filters-list">
-      <div class="filter-row">
-        <select class="search-field-select" data-filter-id="0">
-          <option value="url" selected>URL</option>
-          <option value="title">Title</option>
-        </select>
-        <input type="text" class="filter-input" placeholder="Enter search text..." data-filter-id="0">
-        <select class="operator-select" data-filter-id="0" style="display: none;">
-          <option value="include">Include</option>
-          <option value="exclude">Exclude</option>
-        </select>
-        <select class="time-range-select" id="time-range">
-          <option value="48hours">Past 48 hours</option>
-          <option value="week" selected>Past week</option>
-          <option value="month">Past month</option>
-          <option value="year">Past year</option>
-        </select>
+  <!-- Tab Navigation -->
+  <div class="tab-container">
+    <button class="tab-button active" data-tab="history">History</button>
+    <button class="tab-button" data-tab="windows">Windows</button>
+    <button class="tab-button" data-tab="tabs">Tabs</button>
+  </div>
+
+  <!-- History Tab Content -->
+  <div id="history-tab" class="tab-content active">
+    <div class="filter-container">
+      <div id="filters-list">
+        <div class="filter-row">
+          <select class="search-field-select" data-filter-id="0">
+            <option value="url" selected>URL</option>
+            <option value="title">Title</option>
+          </select>
+          <input type="text" class="filter-input" placeholder="Enter search text..." data-filter-id="0">
+          <select class="operator-select" data-filter-id="0" style="display: none;">
+            <option value="include">Include</option>
+            <option value="exclude">Exclude</option>
+          </select>
+          <select class="time-range-select" id="time-range">
+            <option value="48hours">Past 48 hours</option>
+            <option value="week" selected>Past week</option>
+            <option value="month">Past month</option>
+            <option value="year">Past year</option>
+          </select>
+        </div>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button class="btn-primary" id="add-filter">Add Filter</button>
+        <button class="btn-secondary" id="clear-filters" style="display: none;">Clear filters</button>
+        <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-secondary); cursor: pointer;">
+          <input type="checkbox" id="show-titles" checked>
+          Show titles
+        </label>
+
+      </div>
+      <div class="results-header" id="results-header" style="display: none;">
+        <div class="results-count" id="results-count"></div>
+        <a href="#" class="open-all-link" id="open-all-btn">Open in a new window</a>
       </div>
     </div>
-    <div style="display: flex; gap: 8px; align-items: center;">
-      <button class="btn-primary" id="add-filter">Add Filter</button>
-      <button class="btn-secondary" id="clear-filters" style="display: none;">Clear filters</button>
-      <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-secondary); cursor: pointer;">
-        <input type="checkbox" id="show-titles" checked>
-        Show titles
-      </label>
-      <label style="display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-secondary); cursor: pointer;">
-        <input type="checkbox" id="show-only-open-tabs">
-        Show only open tabs
-      </label>
-    </div>
-    <div class="results-header" id="results-header" style="display: none;">
-      <div class="results-count" id="results-count"></div>
-      <a href="#" class="open-all-link" id="open-all-btn">Open in a new window</a>
+
+    <div class="results-container">
+      <div class="loading" id="loading">Start typing to search history...</div>
+      <div id="results-list"></div>
     </div>
   </div>
-  
-  <div class="results-container">
-    <div class="loading" id="loading">Start typing to search history...</div>
-    <div id="results-list"></div>
+
+  <!-- Windows Tab Content -->
+  <div id="windows-tab" class="tab-content">
+    <div class="results-container">
+      <div class="loading" id="windows-loading">Loading closed windows...</div>
+      <div id="windows-list"></div>
+    </div>
   </div>
-  
+
+  <!-- Tabs Tab Content -->
+  <div id="tabs-tab" class="tab-content">
+    <div class="filter-container">
+      <div id="tabs-filters-list">
+        <div class="filter-row">
+          <select class="search-field-select" data-filter-id="0">
+            <option value="url">URL</option>
+            <option value="title" selected>Title</option>
+          </select>
+          <input type="text" class="filter-input" placeholder="Enter search text..." data-filter-id="0">
+          <select class="operator-select" data-filter-id="0" style="display: none;">
+            <option value="include">Include</option>
+            <option value="exclude">Exclude</option>
+          </select>
+
+        </div>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button class="btn-primary" id="tabs-add-filter">Add Filter</button>
+        <button class="btn-secondary" id="tabs-clear-filters" style="display: none;">Clear filters</button>
+      </div>
+      <div class="results-header" id="tabs-results-header" style="display: none;">
+        <div class="results-count" id="tabs-results-count"></div>
+      </div>
+    </div>
+    <div class="results-container">
+      <div class="loading" id="tabs-loading">Loading open tabs...</div>
+      <div id="tabs-results-list"></div>
+    </div>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>
