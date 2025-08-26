@@ -1274,13 +1274,6 @@ class HistoryFilter {
       }
     }
 
-    // If only showing open tabs with no text filters, display the results
-    if (showOnlyOpenTabs && activeFilters.length === 0) {
-      filteredItems.sort((a, b) => b.lastVisitTime - a.lastVisitTime);
-      this.displayResults(filteredItems);
-      return;
-    }
-
     filteredItems.sort((a, b) => b.lastVisitTime - a.lastVisitTime);
     this.displayResults(filteredItems);
   }
